@@ -15,7 +15,6 @@ import {NativeEventEmitter} from 'react-native';
 import {NativeModules} from 'react-native';
 
 const RCTAzureNotificationHubManager = NativeModules.AzureNotificationHubManager;
-const invariant = require('fbjs/lib/invariant');
 
 const PushNotificationEmitter = new NativeEventEmitter(RCTAzureNotificationHubManager);
 
@@ -216,11 +215,10 @@ class AzureNotificationHubIOS {
    *   {message: string, code: number, details: any}.
    */
   static addEventListener(type: PushNotificationEventName, handler: Function) {
-    invariant(
-      type === 'notification' || type === 'register' || type === 'registrationError' ||
-      type === 'registerAzureNotificationHub' || type === 'azureNotificationHubRegistrationError' || type === 'localNotification',
-      'AzureNotificationHubIOS only supports `notification`, `register`, `registrationError`, `registerAzureNotificationHub`, `azureNotificationHubRegistrationError` and `localNotification` events'
-    );
+    if(!(type === 'notification' || type === 'register' || type === 'registrationError' || type === 'registerAzureNotificationHub' || type === 'azureNotificationHubRegistrationError' || type === 'localNotification')) {
+      console.warn('Unsupported notificaiton type is used');
+      return;
+    };
     var listener;
     if (type === 'notification') {
       listener =  PushNotificationEmitter.addListener(
@@ -273,11 +271,10 @@ class AzureNotificationHubIOS {
    * memory leaks
    */
   static removeEventListener(type: PushNotificationEventName, handler: Function) {
-    invariant(
-      type === 'notification' || type === 'register' || type === 'registrationError' ||
-      type === 'registerAzureNotificationHub' || type === 'azureNotificationHubRegistrationError' || type === 'localNotification',
-      'AzureNotificationHubIOS only supports `notification`, `register`, `registrationError`, `registerAzureNotificationHub`, `azureNotificationHubRegistrationError` and `localNotification` events'
-    );
+    if(!(type === 'notification' || type === 'register' || type === 'registrationError' || type === 'registerAzureNotificationHub' || type === 'azureNotificationHubRegistrationError' || type === 'localNotification')) {
+      console.warn('Unsupported notificaiton type is used');
+      return;
+    };
     var listener = _notifHandlers.get(handler);
     if (!listener) {
       return;
@@ -351,10 +348,10 @@ class AzureNotificationHubIOS {
    *  - `sound` :boolean
    */
   static checkPermissions(callback: Function) {
-    invariant(
-      typeof callback === 'function',
-      'Must provide a valid callback'
-    );
+    if(typeof callback !== 'function') {
+      console.warn('Must provide a valid callback');
+      return;
+    }
     RCTAzureNotificationHubManager.checkPermissions(callback);
   }
 
